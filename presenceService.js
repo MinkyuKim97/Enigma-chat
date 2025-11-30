@@ -1,4 +1,3 @@
-// presenceService.js
 import { rtdb } from "./firebaseConfig.js";
 import {
   ref,
@@ -11,17 +10,15 @@ import {
   get,
 } from "firebase/database";
 
-// 방 입장 시: 2명 제한 + onDisconnect 자동정리
+// Limiting more than 2 users in teh chatroom
 export async function joinPresence(roomId, clientId, payload = {}) {
   const roomRef = ref(rtdb, `presence/${roomId}`);
   const myRef = ref(rtdb, `presence/${roomId}/${clientId}`);
 
-  // 2명 제한을 "원자적으로" 처리 (레이스 방지)
   const res = await runTransaction(roomRef, (current) => {
     const obj = current || {};
     const keys = Object.keys(obj);
 
-    // 이미 들어와 있으면 유지
     if (obj[clientId]) return obj;
 
     if (keys.length >= 2) return; // abort -> room full
@@ -33,10 +30,9 @@ export async function joinPresence(roomId, clientId, payload = {}) {
     throw new Error("ROOM_FULL");
   }
 
-  // 서버가 연결 끊김을 감지하면 자동 remove
+  // Auto remove when the server detect user is gone
   await onDisconnect(myRef).remove();
 
-  // 즉시 한번 기록(표시용)
   await set(myRef, {
     ...payload,
     lastSeen: serverTimestamp(),

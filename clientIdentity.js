@@ -1,4 +1,3 @@
-// clientIdentity.js (project root)
 import { db } from "./firebaseConfig.js";
 import { doc, runTransaction, setDoc, updateDoc } from "firebase/firestore";
 
@@ -23,7 +22,7 @@ function saveLocal(client) {
 }
 
 export async function initClientIdentity() {
-  // 0) localStorage가 있으면 그대로 사용하되, Firestore 문서도 merge로 보장
+  // use localstorage history
   const stored = loadLocal();
   if (stored?.id) {
     await setDoc(
@@ -38,7 +37,7 @@ export async function initClientIdentity() {
     return { id: stored.id, userName: stored.userName ?? "" };
   }
 
-  // 1) 없으면 새로 생성: clients 목록을 확인하여 중복 방지(트랜잭션)
+  // If no localstorage history, make new
   for (let i = 0; i < 50; i++) {
     const id = rand4();
     const ref = doc(db, "clients", id);
@@ -71,7 +70,7 @@ export async function initClientIdentity() {
 function sanitizeName(name) {
   const trimmed = (name ?? "").trim();
   if (!trimmed) return "";
-  // 너무 긴 이름 방지 (원하는 길이로 조절)
+  //Limioit the length
   return trimmed.slice(0, 20);
 }
 
