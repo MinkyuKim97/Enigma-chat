@@ -2,7 +2,7 @@
 [ Encrypt your messages with 1.74M cases of encrypting combinations]
 
 ## How to use?
-1. Enter the chat service: [Enigma Chat Link](minkyukim97.github.io/Enigma-chat/).
+1. Click a link on upper-right side of reposipory to enter Enigma Chat.
 2. Set your username. You can change it later, but note that doing so will change the decryption ID.
 3. Enter or open a chatroom. Each chatroom's max user is 2.
 4. To send messages, exactly 2 users(anyone) must be in the chat. Messages decrypt correctly only when both original users are in teh chatroom at the same time.
