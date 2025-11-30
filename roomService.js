@@ -8,6 +8,8 @@ import {
   addDoc,
   runTransaction,
 } from "firebase/firestore";
+//----------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
 
 export function subscribeRooms(onRooms) {
   const q = query(collection(db, "rooms"), orderBy("createdAtMs", "asc"));
@@ -16,6 +18,8 @@ export function subscribeRooms(onRooms) {
     onRooms(rooms);
   });
 }
+//----------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
 
 export async function tryJoinRoom(roomId, clientId) {
   const roomRef = doc(db, "rooms", roomId);
@@ -64,10 +68,11 @@ export async function sendMessage(roomId, clientInfo, text) {
     text: trimmed,
   });
 }
+//----------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
 export async function leaveRoom(roomId, clientId) {
   const roomRef = doc(db, "rooms", roomId);
 
-  // best-effort: 실패해도 앱 진행
   await runTransaction(db, async (tx) => {
     const snap = await tx.get(roomRef);
     if (!snap.exists()) return;

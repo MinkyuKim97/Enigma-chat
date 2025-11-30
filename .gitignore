@@ -3,3 +3,5 @@ enigma_key.json
 .env
 .env.*
 !.env.example
+roomService.js
+presenceService.js

@@ -1203,7 +1203,12 @@ export function App() {
                 }}
                 title="Reset local identity"
               >
-                Reset ID
+                <p>
+                Get new ID
+                </p>
+                <p>
+                (** Won't be able to decrypt previous messages **)
+                </p>
               </button>
             </div>
 

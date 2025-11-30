@@ -7,6 +7,8 @@ function rand4() {
   return Math.floor(Math.random() * 10000).toString().padStart(4, "0");
 }
 
+// Load a localstorage from browser 
+// -->>>>> You can use 2 different broswer to run 2 users locally
 function loadLocal() {
   const raw = localStorage.getItem(LS_KEY);
   if (!raw) return null;
@@ -21,6 +23,10 @@ function saveLocal(client) {
   localStorage.setItem(LS_KEY, JSON.stringify(client));
 }
 
+//----------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
+
+// Setting up client ID
 export async function initClientIdentity() {
   // use localstorage history
   const stored = loadLocal();
@@ -67,6 +73,9 @@ export async function initClientIdentity() {
   throw new Error("Failed to allocate unique 4-digit client id");
 }
 
+//----------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
+// Setting user name
 function sanitizeName(name) {
   const trimmed = (name ?? "").trim();
   if (!trimmed) return "";
@@ -93,6 +102,9 @@ export function getStoredClient() {
   return loadLocal();
 }
 
+//----------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
+// Rest it
 export function resetClientIdentity() {
   localStorage.removeItem(LS_KEY);
 }

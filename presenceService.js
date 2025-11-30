@@ -9,7 +9,8 @@ import {
   runTransaction,
   get,
 } from "firebase/database";
-
+//----------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
 // Limiting more than 2 users in teh chatroom
 export async function joinPresence(roomId, clientId, payload = {}) {
   const roomRef = ref(rtdb, `presence/${roomId}`);
@@ -40,11 +41,15 @@ export async function joinPresence(roomId, clientId, payload = {}) {
 
   return true;
 }
+//----------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
 
 export async function leavePresence(roomId, clientId) {
   const myRef = ref(rtdb, `presence/${roomId}/${clientId}`);
   await remove(myRef);
 }
+//----------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
 
 export function subscribePresence(roomId, callback) {
   const roomRef = ref(rtdb, `presence/${roomId}`);
