@@ -1,0 +1,37 @@
+mutation CreateGroupChat($name: String!, $description: String!, $avatarUrl: String) @auth(level: USER) {
+  groupChat_insert(data: {
+    name: $name,
+    description: $description,
+    createdById_expr: "auth.uid",
+    avatarUrl: $avatarUrl
+  })
+}
+
+query GetMyGroupChats @auth(level: USER) {
+  groupChats(where: {createdById: {eq_expr: "auth.uid"}}) {
+    id
+    name
+    description
+    avatarUrl
+    createdAt
+  }
+}
+
+mutation JoinGroupChat($groupChatId: UUID!) @auth(level: USER) {
+  groupMembership_insert(data: {
+    groupChatId: $groupChatId,
+    userId_expr: "auth.uid",
+    joinedAt_expr: "request.time"
+  })
+}
+
+query ListGroupMembers($groupChatId: UUID!) @auth(level: USER) {
+  groupChat(id: $groupChatId) {
+    users_via_GroupMembership {
+      id
+      username
+      displayName
+      avatarUrl
+    }
+  }
+}

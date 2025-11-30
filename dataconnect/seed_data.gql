@@ -1,0 +1,74 @@
+mutation PopulateDatabaseWithSeedData @auth(level: NO_ACCESS) {
+  user_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      username: "demouser1",
+      publicKey: "testkey1",
+      createdAt: "2024-04-26T12:00:00Z"
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440001",
+      username: "demouser2",
+      publicKey: "testkey2",
+      createdAt: "2024-04-26T13:00:00Z"
+    }
+  ])
+  groupChat_insertMany(data: [
+    {
+      id: "650e8400-e29b-41d4-a716-446655440000",
+      name: "Demo Group Chat 1",
+      createdById: "550e8400-e29b-41d4-a716-446655440000",
+      createdAt: "2024-04-26T14:00:00Z"
+    },
+    {
+      id: "650e8400-e29b-41d4-a716-446655440001",
+      name: "Demo Group Chat 2",
+      createdById: "550e8400-e29b-41d4-a716-446655440001",
+      createdAt: "2024-04-26T15:00:00Z"
+    }
+  ])
+  groupMembership_insertMany(data: [
+    {
+      groupChatId: "650e8400-e29b-41d4-a716-446655440000",
+      userId: "550e8400-e29b-41d4-a716-446655440000",
+      joinedAt: "2024-04-26T16:00:00Z"
+    },
+    {
+      groupChatId: "650e8400-e29b-41d4-a716-446655440001",
+      userId: "550e8400-e29b-41d4-a716-446655440001",
+      joinedAt: "2024-04-26T17:00:00Z"
+    }
+  ])
+  message_insertMany(data: [
+    {
+      id: "750e8400-e29b-41d4-a716-446655440000",
+      senderId: "550e8400-e29b-41d4-a716-446655440000",
+      content: "Example message from demouser1",
+      contentType: "text",
+      sentAt: "2024-04-26T18:00:00Z",
+      groupChatId: "650e8400-e29b-41d4-a716-446655440000"
+    },
+    {
+      id: "750e8400-e29b-41d4-a716-446655440001",
+      senderId: "550e8400-e29b-41d4-a716-446655440001",
+      content: "Example message from demouser2",
+      contentType: "text",
+      sentAt: "2024-04-26T19:00:00Z",
+      groupChatId: "650e8400-e29b-41d4-a716-446655440001"
+    }
+  ])
+  conversation_insertMany(data: [
+    {
+      user1Id: "550e8400-e29b-41d4-a716-446655440000",
+      user2Id: "550e8400-e29b-41d4-a716-446655440001",
+      createdAt: "2024-04-26T20:00:00Z"
+    }
+  ])
+  contact_insertMany(data: [
+    {
+      ownerId: "550e8400-e29b-41d4-a716-446655440000",
+      contactUserId: "550e8400-e29b-41d4-a716-446655440001",
+      createdAt: "2024-04-26T21:00:00Z"
+    }
+  ])
+}

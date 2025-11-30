@@ -1,0 +1,85 @@
+{
+  "__collections__": {
+    "clients": {
+      "4829": {
+        "id": "4829",
+        "userName": "tester00"
+      },
+      "0371": {
+        "id": "0371",
+        "userName": "tester01"
+      },
+      "5934": {
+        "id": "5934",
+        "userName": "tester02"
+      }
+      ,
+      "8205": {
+        "id": "8205",
+        "userName": "tester03"
+      },
+      "5525": {
+        "id": "5525",
+        "userName": "tester04"
+      }
+    },
+    "rooms": {
+      "room_0000": {
+        "roomName": "room no.0",
+        "createdAt": 1763942400000,
+        "description": "First room for 2",
+        "recipes":"00000000",
+        "__collections__": {
+          "messages": {
+            "msg_0001": {
+              "senderId": "4829",
+              "sentAt": 1763978400000,
+              "text": "Hello, this is the lobby!"
+            },
+            "msg_0002": {
+              "senderId": "0371",
+              "sentAt": 1763978490000,
+              "text": "Nice to meet you :)"
+            }
+          }
+        }
+      },
+
+      "room_0001": {
+        "roomName": "room no.1",
+        "createdAt": 1763946000000,
+        "description": "Second room for 2",
+        "recipes":"00000000",
+        "__collections__": {
+          "messages": {
+            "msg_0001": {
+              "senderId": "5934",
+              "sentAt": 1763982000000,
+              "text": "Is this the random room?"
+            },
+            "msg_0002": {
+              "senderId": "8205",
+              "sentAt": 1763982130000,
+              "text": "Yes, you can talk about anything here."
+            }
+          }
+        }
+      },
+      "room_0002": {
+        "roomName": "room no.2",
+        "createdAt": 1763946000000,
+        "description": "Thrid room for 2",
+        "recipes":"00000000",
+        "__collections__": {
+          "messages": {
+            "msg_0002": {
+              "senderId": "8205",
+              "sentAt": 1763982130000,
+              "text": "Yes, you can talk about anything here."
+            }
+          }
+        }
+      }
+    }
+  }
+}

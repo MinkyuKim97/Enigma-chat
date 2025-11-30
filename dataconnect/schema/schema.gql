@@ -1,0 +1,44 @@
+type User @table {
+  username: String!
+  publicKey: String!
+  createdAt: Timestamp!
+  displayName: String
+  avatarUrl: String
+}
+
+type Contact @table(key: ["owner", "contactUser"]) {
+  owner: User!
+  contactUser: User!
+  createdAt: Timestamp!
+}
+
+type Conversation @table(key: ["user1", "user2"]) {
+  user1: User!
+  user2: User!
+  createdAt: Timestamp!
+}
+
+type GroupChat @table {
+  name: String!
+  createdAt: Timestamp!
+  createdBy: User!
+  description: String
+  avatarUrl: String
+}
+
+type GroupMembership @table(key: ["groupChat", "user"]) {
+  groupChat: GroupChat!
+  user: User!
+  joinedAt: Timestamp!
+}
+
+type Message @table {
+  sender: User!
+  content: String!
+  contentType: String!
+  sentAt: Timestamp!
+  conversation: Conversation
+  groupChat: GroupChat
+  imageUrl: String
+  fileUrl: String
+}
