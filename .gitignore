@@ -5,3 +5,6 @@ enigma_key.json
 !.env.example
 roomService.js
 presenceService.js
+server.js
+sample.json
+PROTOCOL.md
