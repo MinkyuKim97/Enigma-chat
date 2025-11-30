@@ -32,8 +32,8 @@ body {
 
 .leftDiv {
   width: 20vw;
-  min-width: 280px;
-  max-width: 360px;
+  min-width: 200px;
+  /* max-width: 360px; */
   height: 100%;
   border-right: 1px solid var(--stroke);
   padding: 20px;
@@ -308,8 +308,9 @@ body {
   background: rgba(255, 255, 255, 0);
   /* align-items: center; */
   justify-content: center;
-  width: 280px;
-  min-width: 240px;
+  width: 30%;
+  /* width: 280px; */
+  /* min-width: 240px; */
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -354,7 +355,7 @@ body {
 
 .composer {
   flex: 1;
-  min-width: 520px;
+  /* min-width: 520px; */
   display: flex;
   flex-direction: column;
   gap: 10px;
