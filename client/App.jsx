@@ -1,7 +1,11 @@
+// import CSS
 import "../style.css";
 
+// Import React
 import { useEffect, useMemo, useRef, useState } from "react";
+//Import basic Firebase database, real-time database
 import { db, rtdb } from "../firebaseConfig.js";
+// Import Firestore database
 import {
   collection,
   addDoc,
@@ -18,6 +22,7 @@ import {
   deleteField,
 } from "firebase/firestore";
 
+// Import Firebase real-time database
 import {
   ref,
   onValue,
@@ -34,9 +39,12 @@ import {
   resetClientIdentity,
 } from "../clientIdentity.js";
 
+// Limiting the amount of participants
 const MAX_OCCUPANTS = 2;
 
+// Set the origianl 8 digit recipes as a '00000000'
 const RECIPE_DEFAULT = "00000000";
+//Compare the recipe and check is it available
 const isValidRecipe = (r) =>
   typeof r === "string" && /^\d{8}$/.test(r) && r !== RECIPE_DEFAULT;
 
@@ -44,12 +52,14 @@ function toDateFromMs(ms) {
   return typeof ms === "number" ? new Date(ms) : new Date();
 }
 
+// Limiting room name length (from examples)
 function sanitizeRoomName(name) {
   const cleaned = (name ?? "").trim().replace(/\s+/g, " ");
   if (!cleaned) return "";
   return cleaned.slice(0, 30);
 }
 
+// Limiting the message omly with Eng for encrypting the string in the right way
 function validateEnglishOnly(text) {
   for (const ch of text) {
     if (/\p{L}/u.test(ch)) {
@@ -68,6 +78,11 @@ function makeRoomNameFallback(nextNumber) {
   return `room no.${nextNumber}`;
 }
 
+//**********************************************************************
+// Room encrypt/decrypt recipe making function
+// Comparing first 2 participants of the chatroom
+// Compare the 1st digit number, and 4th digit number -> if first one is bigger than the second, place the first participant(room creator client)
+// Divide the 8 digit numbers with 26/26/26/99 to make a 3 rotor combinations and combinations case control
 function buildRecipeFromTwoIds(idA, idB, creatorId) {
   const a = String(idA ?? "0000")
     .padStart(4, "0")
@@ -166,13 +181,15 @@ function buildRecipeFromTwoIds(idA, idB, creatorId) {
   return out;
 }
 
+// Import the base 8 digit number to compare
+// If there's no participant on one seat, replace it with '0000'
 function buildRecipeFromCurrentParticipants(presenceRoomObj, creatorId) {
   const ids = Object.keys(presenceRoomObj || {});
   const a = ids.length >= 1 ? ids[0] : "0000";
   const b = ids.length >= 2 ? ids[1] : "0000";
   return buildRecipeFromTwoIds(a, b, creatorId);
 }
-
+// After saving the room recipe on the database, lock it to use it as a default setting
 async function lockRecipeIfNeeded(roomId, enteringClientId) {
   const roomRef = doc(db, "rooms", roomId);
 
@@ -210,6 +227,7 @@ async function lockRecipeIfNeeded(roomId, enteringClientId) {
   });
 }
 
+// Setting the room name at the initial room creating stage
 async function setRoomNameOnce(roomId, clientId, newNameRaw) {
   const newName = sanitizeRoomName(newNameRaw);
   if (!newName) throw new Error("Room name cannot be empty");
@@ -246,6 +264,7 @@ async function deleteRoomCascade(roomId) {
   await deleteDoc(doc(db, "rooms", roomId));
 }
 
+// Selecting the room and enter (from example)
 async function joinPresence(roomId, clientId, userName) {
   const roomRef = ref(rtdb, `presence/${roomId}`);
   const myRef = ref(rtdb, `presence/${roomId}/${clientId}`);
@@ -272,7 +291,7 @@ async function joinPresence(roomId, clientId, userName) {
 
   return true;
 }
-
+//Clearing the presence when the user leaves the room
 async function leavePresence(roomId, clientId) {
   if (!roomId || !clientId) return;
   const myRef = ref(rtdb, `presence/${roomId}/${clientId}`);
@@ -303,6 +322,13 @@ function parse2(recipe, start) {
   return Number.isFinite(n) ? n : 0;
 }
 
+//************************************************** */
+// [!] Encrypting/Decrypting function
+// make arrays to export a encypted letter
+// ex. unput 'A' -> translate 'A' as '0' -> Put '0' into PERM_ENC[] (PERM_ENC[0] => 10)
+// -> Put '10' into next rotor -> reapeating -> and it export the result letter from it
+// + Whenever user add one letter, it increase the rotor number, so change the ecrypting combination every single letter
+// Also, when the rotor hit 26(max num), it rototes the next rotor and go back to initial state(0)
 const P_A = 0,
   P_B = 1,
   P_C = 2,
@@ -367,6 +393,8 @@ const PERM_ENC = [
   ],
 ];
 
+// This is for decrypting.
+// Bascily, for decrypting it needs to use inverted array and go backward to see the origianl letter
 function invertPerm(p) {
   const inv = Array(26);
   for (let i = 0; i < 26; i++) inv[p[i]] = i;
@@ -384,6 +412,8 @@ const Z_81_89 = [P_J3, P_J2, P_I, P_C, P_B, P_H, P_A, P_D, P_E];
 const Y_90_98 = [P_J1, P_I, P_J3, P_C, P_E, P_A, P_H, P_F, P_D];
 const Z_90_98 = [P_B, P_J1, P_G, P_J3, P_H, P_C, P_E, P_A, P_I];
 
+// Use last 2 digits(0-99) to change the cases
+// HARDCODED
 function getPermForCase(caseId, axis) {
   const c = caseId % 100;
 
@@ -414,6 +444,7 @@ function getPermForCase(caseId, axis) {
   return P_J2;
 }
 
+// Importing the variables in the machine(Enigima Machine)
 function machineFromRecipe(recipe) {
   const r = String(recipe || RECIPE_DEFAULT)
     .padStart(8, "0")
@@ -446,6 +477,7 @@ function machineFromRecipe(recipe) {
   };
 }
 
+// Pushing rotor number when it hits the max
 function stepOdometer(pos) {
   let [p1, p2, p3] = pos;
   p1 = (p1 + 1) % 26;
@@ -518,6 +550,7 @@ function transformCharAndStep(ch, machine, pos) {
   return { outCh, nextPos };
 }
 
+// Use the encrypting recipe
 function encryptWithHistory(plain, fixedRecipe, historyMessages) {
   if (!isValidRecipe(fixedRecipe)) return plain;
 
@@ -538,7 +571,7 @@ function encryptWithHistory(plain, fixedRecipe, historyMessages) {
   }
   return out;
 }
-
+// Use React 'useEffect' and re-rendering to use the decrypted result
 function decryptReplayAll(messages, recipeForView) {
   const machine = machineFromRecipe(recipeForView);
   let pos = machine.startPos;
@@ -556,7 +589,9 @@ function decryptReplayAll(messages, recipeForView) {
   }
   return out;
 }
-
+//*************************************************************** */
+//*************************************************************** */
+// HTML parts
 export function App() {
   const [clientId, setClientId] = useState("");
   const [userName, setUserNameState] = useState("");
@@ -600,6 +635,7 @@ export function App() {
     };
   }, [sendError]);
 
+  // Clean up history (still the old variable setting remains)
   useEffect(() => {
     const FLAG = "rooms_schema_cleanup_v2_done";
     if (localStorage.getItem(FLAG) === "1") return;
@@ -628,6 +664,7 @@ export function App() {
     })().catch((e) => console.error("rooms cleanup failed:", e));
   }, []);
 
+  // Client Client!
   useEffect(() => {
     (async () => {
       const c = await initClientIdentity();
@@ -640,6 +677,7 @@ export function App() {
     });
   }, []);
 
+  // From example
   useEffect(() => {
     const unsub = onSnapshot(collection(db, "clients"), (snap) => {
       const map = {};
@@ -760,6 +798,8 @@ export function App() {
     };
   }, [clientId]);
 
+  // First tyiem sueing useMemo
+  // Figured out it uses for optimization
   const selectedRoomObj = useMemo(
     () => rooms.find((r) => r.id === selectedRoom) || null,
     [rooms, selectedRoom]
@@ -792,6 +832,8 @@ export function App() {
     isValidRecipe(selectedRoomObj.recipes) &&
     occInSelectedRoom === 2;
 
+    // Setting up User name
+    // Use try catch to prevent kick back
   async function saveNickname() {
     try {
       setSavingNick(true);
@@ -803,7 +845,7 @@ export function App() {
       setSavingNick(false);
     }
   }
-
+// Room control functions --------------------------
   async function handleSelectRoom(roomId) {
     if (!clientId) return;
     if (needsNickname) {
@@ -946,6 +988,7 @@ export function App() {
     }
   }
 
+  // --------------------------------------------------------------------------------
   const createdDateStr = useMemo(() => {
     if (!createdAtMs) return "—";
     try {
@@ -957,6 +1000,7 @@ export function App() {
 
   return (
     <>
+    {/* Overlay parts, for setting up useranem, room name */}
       {needsNickname && (
         <div className="overlay">
           <div className="modal">
@@ -1028,6 +1072,9 @@ export function App() {
           </div>
         )}
 
+      {/* Structure, cover with 'totalDiv'
+      -> Left and Right Div
+      */}
       <div className="totalDiv">
         <div className="leftDiv">
           <div className="leftHeader">
@@ -1203,12 +1250,8 @@ export function App() {
                 }}
                 title="Reset local identity"
               >
-                <p>
-                Get new ID
-                </p>
-                <p>
-                (** Won't be able to decrypt previous messages **)
-                </p>
+                <p>Get new ID</p>
+                <p>(** Won't be able to decrypt previous messages **)</p>
               </button>
             </div>
 
@@ -1309,6 +1352,7 @@ export function App() {
   );
 }
 
+// Chat message rendering
 function Message({ senderLabel, timeMs, isLocal, content }) {
   const d = new Date(timeMs);
   return (
